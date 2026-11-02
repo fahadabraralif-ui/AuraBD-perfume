@@ -64,7 +64,7 @@ export async function POST(req) {
       let toast = "";
       if (action === "st" && STATUSES.some((s) => s.id === status)) {
         await sql`UPDATE orders SET status = ${status} WHERE id = ${orderId}`;
-        // কনফার্ম e Facebook Purchase, রিটার্ন e OrderReturned
+        // রিটার্ন e OrderReturned (Purchase order ashar somoy-i gese)
         after(() => afterStatusChange(orderId, status));
         toast = `স্ট্যাটাস: ${STATUSES.find((s) => s.id === status).label}`;
         // কনফার্ম korle nije theke courier e entry

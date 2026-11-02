@@ -45,7 +45,7 @@ export async function updateStatus(id, status) {
   refreshAdmin();
   const change = [statusChangeText(status), autoSendText(auto)].filter(Boolean).join("\n");
   after(() => syncOrder(id, { change }));
-  // কনফার্ম e Facebook Purchase, রিটার্ন e OrderReturned (বাতিল e kichu na)
+  // রিটার্ন e OrderReturned (Purchase order ashar somoy-i gese; fail korle ekhane abar chesta)
   after(() => afterStatusChange(id, status));
   return auto;
 }

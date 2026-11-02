@@ -86,7 +86,21 @@ export default function OrderForm({ products, delivery, freeBoxes = 0, text = {}
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error);
-      // Purchase ekhane pathai na — admin কনফার্ম korle server theke (Conversions API) jay
+      // Purchase: browser theke + server theke (Conversions API) — ek eventID, Facebook ekbar-i gone
+      if (data.id) {
+        window.fbq?.(
+          "track",
+          "Purchase",
+          {
+            value: total,
+            currency: "BDT",
+            content_ids: [String(selected.id)],
+            content_type: "product",
+            num_items: qty[selected.id],
+          },
+          { eventID: `purchase-${data.id}` }
+        );
+      }
       window.dataLayer?.push({ event: "order_placed", value: total, currency: "BDT" });
       setStatus("done");
     } catch (err) {

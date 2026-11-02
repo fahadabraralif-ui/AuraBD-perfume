@@ -4,6 +4,7 @@ import { sql, ensureTables } from "@/lib/db";
 import { getSettings, getProducts, deliveryOptions, deliveryCharge } from "@/lib/store";
 import { checkOrder, clientIp } from "@/lib/fraud";
 import { notifyNewOrder } from "@/lib/telegram";
+import { sendPurchase } from "@/lib/fbcapi";
 
 export async function POST(req) {
   const body = await req.json().catch(() => null);
@@ -32,7 +33,7 @@ export async function POST(req) {
     const qty = Math.min(10, Math.max(1, Number(body.qty) || 1));
     const total = product.price * qty + deliveryCharge(settings, area, product, qty);
     const name = String(body.name).trim().slice(0, 100);
-    // Facebook Conversions API er jonno (confirm er por Purchase e lage)
+    // Facebook Conversions API er jonno (order ashar sathe Purchase e lage)
     const fbp = String(body.fbp || "").slice(0, 200);
     const fbc = String(body.fbc || "").slice(0, 300);
     const userAgent = String(req.headers.get("user-agent") || "").slice(0, 400);
@@ -49,6 +50,8 @@ export async function POST(req) {
     revalidatePath("/admin", "layout");
     // Customer ke wait na koriye Telegram e pathay
     after(() => notifyNewOrder(row.id));
+    // Order ashar sathe sathe Purchase (Conversions API) — browser er Purchase er sathe ek event_id, tai ekbar-i gona hoy
+    after(() => sendPurchase(row.id));
 
     return Response.json({ ok: true, id: Number(row.id) });
   } catch (err) {
