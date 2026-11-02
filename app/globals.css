@@ -142,6 +142,30 @@ button { font: inherit; cursor: pointer; }
 .offer-strip b { color: var(--gold); }
 .offer-strip span { display: block; font-size: .9rem; color: var(--muted); }
 
+/* Offer countdown timer */
+.countdown {
+  text-align: center;
+  background: linear-gradient(90deg, #fb8a6e, #fb923c 45%, #fcd34d);
+  border-radius: 14px;
+  padding: 16px 12px 18px;
+  margin: -12px 0 28px;
+}
+.countdown-title { color: #111; font-weight: 700; font-size: 1.2rem; margin-bottom: 12px; }
+.countdown-boxes { display: flex; justify-content: center; gap: 10px; }
+.countdown-box {
+  background: #000;
+  border-radius: 14px;
+  width: 74px;
+  padding: 8px 0 6px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .3);
+}
+.countdown-box b { display: block; color: var(--gold); font-size: 1.6rem; line-height: 1.1; }
+.countdown-box small { color: #fff; font-size: .85rem; }
+@media (max-width: 400px) {
+  .countdown-box { width: 64px; }
+  .countdown-box b { font-size: 1.35rem; }
+}
+
 .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
 .gallery { position: sticky; top: 90px; }
 .gallery-main {

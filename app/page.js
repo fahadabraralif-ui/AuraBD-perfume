@@ -7,6 +7,7 @@ import OrderForm from "@/components/OrderForm";
 import Tracking from "@/components/Tracking";
 import Brand from "@/components/Brand";
 import VoicePlayer from "@/components/VoicePlayer";
+import Countdown from "@/components/Countdown";
 import Reveal from "@/components/Reveal";
 import RevealInit from "@/components/RevealInit";
 import "./motion.css";
@@ -93,6 +94,8 @@ export default async function Home() {
             {t("offer_strip")}
             <span>{t("offer_strip_sub")}</span>
           </div>
+
+          <Countdown />
 
           <div className="hero-grid">
             <Gallery images={gallery} brand={s.brand} badge={t("gallery_badge")} />

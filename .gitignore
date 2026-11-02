@@ -4,3 +4,9 @@ data/orders.json
 
 .vercel
 .env*
+
+.vercel
+.neon
+
+# local uploads (no Blob token)
+/public/uploads
