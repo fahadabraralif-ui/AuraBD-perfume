@@ -16,6 +16,7 @@
 
 /* Status → gradient (chip, badge, pill, status box, order card) */
 .adm .st-pending { --sg: var(--g-blue); }
+.adm .st-on_hold { --sg: var(--g-gold); }
 .adm .st-confirmed { --sg: var(--g-green); }
 .adm .st-shipped { --sg: var(--g-purple); }
 .adm .st-delivered { --sg: var(--g-teal); }

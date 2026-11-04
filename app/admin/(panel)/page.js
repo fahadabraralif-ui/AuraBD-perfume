@@ -11,7 +11,7 @@ import OrderCalendar from "./OrderCalendar";
 import { LIMITS } from "@/lib/dateRange";
 
 const STATUS_COLOR = {
-  pending: "#3b82f6", confirmed: "#16a34a", shipped: "#a855f7",
+  pending: "#3b82f6", on_hold: "#eab308", confirmed: "#16a34a", shipped: "#a855f7",
   delivered: "#14b8a6", returned: "#f97316", cancelled: "#ef4444",
 };
 const DAY = 864e5;
