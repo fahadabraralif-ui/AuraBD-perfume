@@ -7,7 +7,7 @@ import { getSettings } from "@/lib/store";
 import {
   tg, linkCode, getChats, addChat, removeChat, syncOrder, summaryText, sendOrderCard, trackMessage,
 } from "@/lib/telegram";
-import { COURIERS, sendOrderToCourier, autoSendOnConfirm, autoSendText } from "@/lib/courier";
+import { COURIERS, sendOrderToCourier, autoSendOnShip, autoSendText } from "@/lib/courier";
 
 const HELP = [
   "🤖 <b>কমান্ড সমূহ</b>",
@@ -67,17 +67,17 @@ export async function POST(req) {
         // রিটার্ন e OrderReturned (Purchase order ashar somoy-i gese)
         after(() => afterStatusChange(orderId, status));
         toast = `স্ট্যাটাস: ${STATUSES.find((s) => s.id === status).label}`;
-        // কনফার্ম korle nije theke courier e entry
-        if (status === "confirmed") {
-          const auto = await autoSendOnConfirm(orderId);
+        // শিপড korle nije theke courier e entry (কনফার্ম e na)
+        if (status === "shipped") {
+          const auto = await autoSendOnShip(orderId);
           if (auto?.error) {
-            await tg("answerCallbackQuery", { callback_query_id: cb.id, text: `✅ কনফার্ম হয়েছে\n${autoSendText(auto)}`, show_alert: true });
+            await tg("answerCallbackQuery", { callback_query_id: cb.id, text: `🚚 শিপড হয়েছে\n${autoSendText(auto)}`, show_alert: true });
             await trackMessage(orderId, chatId, cb.message.message_id);
             await syncOrder(orderId, { fromTelegram: true });
             revalidatePath("/admin", "layout");
             return Response.json({ ok: true });
           }
-          if (auto) toast = `✅ কনফার্ম + ${autoSendText(auto)}`;
+          if (auto) toast = `🚚 শিপড + ${autoSendText(auto)}`;
         }
       } else if (action === "bl") {
         const reason = `ফেক অর্ডার #${orderId} (Telegram)`;

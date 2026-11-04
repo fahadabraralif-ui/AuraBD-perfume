@@ -10,7 +10,7 @@ import { deleteImages } from "@/lib/images";
 import { getBalance } from "@/lib/steadfast";
 import { getPathaoStores } from "@/lib/pathao";
 import { getCarrybeeStores } from "@/lib/carrybee";
-import { COURIERS, sendOrderToCourier, syncAllCouriers, autoSendOnConfirm, autoSendText } from "@/lib/courier";
+import { COURIERS, sendOrderToCourier, syncAllCouriers, autoSendOnShip, autoSendText } from "@/lib/courier";
 import { capiTokens } from "@/lib/fbcapi";
 import { checkPhone } from "@/lib/bdcourier";
 import { maybeAutoSync } from "@/lib/courierSync";
@@ -40,8 +40,8 @@ export async function updateStatus(id, status) {
   await requireAdmin();
   if (!STATUSES.some((s) => s.id === status)) return;
   await sql`UPDATE orders SET status = ${status} WHERE id = ${id}`;
-  // কনফার্ম korle nije theke courier e entry (বাতিল/onno status e kichu hoy na)
-  const auto = status === "confirmed" ? await autoSendOnConfirm(id) : null;
+  // শিপড korle nije theke courier e entry (কনফার্ম/onno status e kichu hoy na)
+  const auto = status === "shipped" ? await autoSendOnShip(id) : null;
   refreshAdmin();
   const change = [statusChangeText(status), autoSendText(auto)].filter(Boolean).join("\n");
   after(() => syncOrder(id, { change }));
@@ -132,12 +132,11 @@ export async function convertIncomplete(phone) {
             ${area.id}, 1, ${(product?.price || 0) + deliveryCharge(settings, area, product, 1)}, 'confirmed', 'অসম্পূর্ণ থেকে কনভার্ট')
     RETURNING id`;
   await sql`DELETE FROM incomplete_orders WHERE phone = ${phone}`;
-  // Call kore confirm kora order — auto courier chalu thakle eta o chole jay
-  const auto = await autoSendOnConfirm(row.id);
+  // কনফার্ম hishebe ashe — courier e jay না, শিপড korle tokhon jabe
   refreshAdmin();
   after(() => notifyNewOrder(row.id));
   after(() => afterStatusChange(row.id, "confirmed"));
-  return auto;
+  return null;
 }
 
 /* ---------- Products ---------- */
@@ -507,8 +506,8 @@ export async function createManualOrder(_prev, formData) {
   await sql`UPDATE products SET stock = GREATEST(stock - ${qty}, 0) WHERE id = ${product.id}`;
   await sql`DELETE FROM incomplete_orders WHERE phone = ${phone}`;
 
-  // কনফার্মড hishebe dile auto courier chalu thakle shathe shathe courier e jay
-  const auto = status === "confirmed" ? await autoSendOnConfirm(row.id) : null;
+  // কনফার্মড hishebe dile o courier e jay না — শিপড korle tokhon auto entry hoy
+  const auto = null;
   refreshAdmin();
   after(() => notifyNewOrder(row.id));
   after(() => afterStatusChange(row.id, status));

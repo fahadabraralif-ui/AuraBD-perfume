@@ -16,7 +16,7 @@ export default async function NewOrderPage() {
       <p className="adm-muted adm-intro">
         কাস্টমার ফোনে বা মেসেজে অর্ডার দিলে এখান থেকে বসান। অর্ডারটা ল্যান্ডিং পেজের অর্ডারের মতোই অর্ডার লিস্ট আর Telegram এ যাবে।
         {auto
-          ? ` “কনফার্মড” হিসেবে দিলে সাথে সাথে ${COURIERS[auto].name} এ এন্ট্রি হয়ে যাবে।`
+          ? ` অর্ডার লিস্ট থেকে “শিপড” করলে ${COURIERS[auto].name} এ অটো এন্ট্রি হবে।`
           : " কুরিয়ার অটো এন্ট্রি এখন বন্ধ/সেট করা নেই — পরে অর্ডার পেজ থেকে পাঠাতে পারবেন।"}
       </p>
       <div className="adm-box adm-narrow">
