@@ -126,7 +126,7 @@ function Risk({ h }) {
 }
 
 // BD Courier: shob courier e ei number er parcel — koto % রিসিভ, koto % রিটার্ন
-function CourierHistory({ o, run }) {
+export function CourierHistory({ o, run }) {
   const [error, setError] = useState("");
   const h = o.courierHist;
   const refresh = () =>

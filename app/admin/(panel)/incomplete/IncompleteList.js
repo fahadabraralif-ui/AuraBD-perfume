@@ -3,6 +3,7 @@
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { deleteIncomplete, convertIncomplete } from "../../actions";
+import { CourierHistory } from "../orders/OrdersTable";
 
 const fmtDate = (iso) =>
   new Date(iso).toLocaleString("en-GB", {
@@ -21,7 +22,7 @@ export default function IncompleteList({ rows }) {
       <div className="adm-table-wrap">
         <table className="adm-table">
           <thead>
-            <tr><th>সময়</th><th>কাস্টমার</th><th>ঠিকানা</th><th>পণ্য</th><th></th></tr>
+            <tr><th>সময়</th><th>কাস্টমার</th><th>কুরিয়ার হিস্টরি</th><th>ঠিকানা</th><th>পণ্য</th><th></th></tr>
           </thead>
           <tbody>
             {rows.map((r) => (
@@ -32,6 +33,11 @@ export default function IncompleteList({ rows }) {
                   <small>
                     <a href={`tel:${r.phone}`}>📞 {r.phone}</a> · <a href={`https://wa.me/88${r.phone}`} target="_blank" rel="noreferrer">WhatsApp</a>
                   </small>
+                </td>
+                <td>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                    <CourierHistory o={r} run={run} />
+                  </div>
                 </td>
                 <td>{r.address || "—"}</td>
                 <td><small>{r.product}</small></td>
