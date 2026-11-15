@@ -45,7 +45,6 @@ const REVEAL = [
   [".cb-benefit", "alt"],
   [".cb-offer-box > *", "up"],
   [".c1490 .checkout", "up"],
-  [".cb-faq details", "alt"],
   [".cb-footer .cb-container", "up"],
 ];
 
@@ -85,7 +84,7 @@ export default async function ComboPage() {
         <div className="cb-container cb-nav">
           <a className="cb-brand" href="#">{s.logo ? <img src={s.logo} alt={s.brand} /> : brand}</a>
           <nav className="cb-navlinks">
-            <a href="#collection">কালেকশন</a><a href="#benefits">কেন নেবেন</a><a href="#offer">অফার</a><a href="#faq">FAQ</a>
+            <a href="#collection">কালেকশন</a><a href="#benefits">কেন নেবেন</a><a href="#offer">অফার</a><a href="#order">অর্ডার</a>
           </nav>
           <div className="cb-nav-right">
             {s.phone && <a href={`tel:${s.phone}`} className="cb-phone">📞 {s.phone}</a>}
@@ -187,19 +186,10 @@ export default async function ComboPage() {
           </div>
         </section>
 
-        {L.faq.length > 0 && (
-          <section id="faq"><div className="cb-container">
-            <div className="cb-head"><div className="cb-kicker">{t("faq_kicker")}</div><h2>{t("faq_title")}</h2></div>
-            <div className="cb-faq">
-              {L.faq.map((f, i) => <details key={i}><summary>{fill(f.q)}</summary><p>{fill(f.a)}</p></details>)}
-            </div>
-          </div></section>
-        )}
       </main>
 
       <footer className="cb-footer"><div className="cb-container"><strong>{brand}</strong><br />{t("footer")}<br />© {new Date().getFullYear()} {brand}. সর্বস্বত্ব সংরক্ষিত।</div></footer>
       {s.whatsapp && <a href={`https://wa.me/${s.whatsapp}`} className="float-wa cb-float-wa" target="_blank" rel="noreferrer" aria-label="WhatsApp">💬</a>}
-      <div className="cb-sticky"><div><small>{t("sticky_text")}</small><br /><b>৳{v.price}</b></div><a className="cb-btn" href="#order">{t("sticky_btn")}</a></div>
     </div>
   );
 }

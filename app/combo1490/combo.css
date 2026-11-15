@@ -87,14 +87,8 @@
 .c1490 .cb-done-ico{width:64px;height:64px;margin:0 auto 12px;border-radius:50%;display:grid;place-items:center;background:#2fbe70;color:#fff;font-size:32px;font-weight:900}
 .c1490 .cb-done p{color:var(--muted)}
 .c1490 .cb-done .cb-done-total{color:var(--gold);font-weight:800;font-size:18px}
-.c1490 .cb-faq{max-width:800px;margin:auto;display:grid;gap:12px}
-.c1490 .cb-faq details{background:var(--panel);border:1px solid var(--line);padding:17px 20px;border-radius:13px}
-.c1490 .cb-faq summary{cursor:pointer;font-weight:700}
-.c1490 .cb-faq details p{color:var(--muted);margin:10px 0 0}
-.c1490 .cb-footer{padding:28px 0 90px;border-top:1px solid var(--line);color:var(--muted);text-align:center;font-size:13px}
+.c1490 .cb-footer{padding:28px 0 96px;border-top:1px solid var(--line);color:var(--muted);text-align:center;font-size:13px}
 .c1490 .cb-footer strong{color:#fff}
-.c1490 .cb-sticky{display:none;position:fixed;bottom:0;left:0;right:0;z-index:30;padding:10px 14px calc(10px + env(safe-area-inset-bottom));background:rgba(7,11,25,.94);backdrop-filter:blur(12px);border-top:1px solid var(--line);align-items:center;justify-content:space-between;gap:10px}
-.c1490 .cb-sticky b{color:var(--gold);font:800 20px var(--num)}
 @media(max-width:850px){
   .c1490 .cb-hero-grid{grid-template-columns:1fr;gap:28px}
   .c1490 .cb-hero-copy{text-align:center}
@@ -124,8 +118,6 @@
   .c1490 .cb-offer-box h2{font-size:26px}
   .c1490 .cb-form-card,.c1490 .cb-order-info{padding:19px}
   .c1490 .cb-form-grid{grid-template-columns:1fr}
-  .c1490 .cb-sticky{display:flex}
-  .c1490 .cb-footer{padding-bottom:95px}
 }
 
 /* ===== Main site er feature: timer, gallery, rating, WhatsApp, voice, animation ===== */
@@ -183,15 +175,12 @@
 .c1490 .cb-float-wa{animation:s-ping 1.8s ease-out infinite}
 
 /* Reveal shuru howar age prothom screen er jinish lukano (RevealInit) */
-.rv-js .c1490 :is(.cb-hero-copy > *, .gallery, .cb-head > *, .cb-product, .cb-free-copy > *, .cb-benefit, .cb-offer-box > *, .checkout, .cb-faq details){opacity:0}
+.rv-js .c1490 :is(.cb-hero-copy > *, .gallery, .cb-head > *, .cb-product, .cb-free-copy > *, .cb-benefit, .cb-offer-box > *, .checkout){opacity:0}
 
-/* Mobile: niche order bar ache, tai voice ar WhatsApp button ektu upore */
 @media(max-width:560px){
   .c1490 .cb-phone{display:none}
   .c1490 .countdown{margin-bottom:24px}
   .c1490 .cb-wa{display:flex;justify-content:center}
-  .voice-wrap{bottom:84px}
-  .c1490 .cb-float-wa{bottom:84px}
 }
 @media(max-width:850px){.c1490 .cb-phone{display:none}}
 
