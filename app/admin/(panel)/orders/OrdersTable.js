@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { updateStatus, updateNote, updateOrderInfo, deleteOrder, blockOrder, unblock, sendToCourier, checkPhoneAction } from "../../actions";
+import { updateStatus, updateNote, updateOrderInfo, updateOrderTotal, deleteOrder, blockOrder, unblock, sendToCourier, checkPhoneAction } from "../../actions";
 
 // Steadfast er status (Pathao er status English e ashe, sheta i dekhai)
 const COURIER_STATUS = {
@@ -110,6 +110,43 @@ function CustomerInfo({ o, run }) {
           বাতিল
         </button>
       </div>
+    </div>
+  );
+}
+
+// Order er mot dam: click korle bodlano jay (discount / extra charge)
+function PriceEdit({ o, run }) {
+  const [editing, setEditing] = useState(false);
+  const [val, setVal] = useState(String(o.total));
+  const [error, setError] = useState("");
+
+  if (!editing) {
+    return (
+      <b className="price-edit" title="দাম বদলাতে ক্লিক করুন" style={{ cursor: "pointer" }}
+        onClick={() => { setVal(String(o.total)); setEditing(true); }}>
+        ৳{o.total.toLocaleString("en-IN")} <small style={{ fontSize: 13 }}>✏️</small>
+      </b>
+    );
+  }
+
+  const save = () =>
+    run(async () => {
+      const r = await updateOrderTotal(o.id, val);
+      if (r?.error) return setError(r.error);
+      if (r?.warning) alert(r.warning);
+      setError("");
+      setEditing(false);
+    });
+
+  return (
+    <div style={{ display: "flex", gap: 6, alignItems: "center", justifyContent: "flex-end", flexWrap: "wrap" }}>
+      <span>৳</span>
+      <input type="number" min="0" value={val} autoFocus onChange={(e) => setVal(e.target.value)}
+        onKeyDown={(e) => { if (e.key === "Enter") save(); if (e.key === "Escape") setEditing(false); }}
+        style={{ width: 100, padding: "6px 8px" }} aria-label="মোট দাম" />
+      <button type="button" className="adm-btn sm" onClick={save}>✓ সেভ</button>
+      <button type="button" className="adm-btn sm ghost" onClick={() => { setError(""); setEditing(false); }}>বাতিল</button>
+      {error && <small className="adm-err" style={{ width: "100%", textAlign: "right" }}>{error}</small>}
     </div>
   );
 }
@@ -289,7 +326,7 @@ export default function OrdersTable({ orders, statuses, initialFilter, couriers 
                 <div className="order-prod">
                   <span>{o.product || "—"}</span>
                   <small>Qty: {o.qty} • {AREA[o.area] || o.area}</small>
-                  <b>৳{o.total.toLocaleString("en-IN")}</b>
+                  <PriceEdit o={o} run={run} />
                   <Courier o={o} run={run} couriers={couriers} />
                 </div>
               </div>

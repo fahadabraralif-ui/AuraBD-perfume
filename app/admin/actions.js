@@ -96,6 +96,25 @@ export async function updateOrderInfo(id, info) {
   };
 }
 
+// Order er mot dam (delivery shoho) nijer moto bodlano — discount / extra charge er jonno
+export async function updateOrderTotal(id, total) {
+  await requireAdmin();
+  total = Math.round(Number(total));
+  if (!(total >= 0) || total > 10000000) return { error: "সঠিক টাকার পরিমাণ দিন" };
+  const [o] = await sql`SELECT total, courier_id, courier FROM orders WHERE id = ${id}`;
+  if (!o) return { error: "অর্ডার পাওয়া যায়নি" };
+  if (o.total === total) return { ok: true };
+  await sql`UPDATE orders SET total = ${total} WHERE id = ${id}`;
+  refreshAdmin();
+  after(() => syncOrder(id, { change: `✏️ <b>দাম বদলানো হয়েছে: ৳${o.total} → ৳${total}</b>` }));
+  return {
+    ok: true,
+    warning: o.courier_id
+      ? `অর্ডারটা আগেই ${COURIERS[o.courier || "steadfast"]?.name || "কুরিয়ার"} এ পাঠানো হয়েছে (${o.courier_id}) — ওখানে COD টাকা কুরিয়ারের প্যানেল থেকে বদলাতে হবে।`
+      : "",
+  };
+}
+
 export async function updateNote(id, note) {
   await requireAdmin();
   await sql`UPDATE orders SET note = ${String(note).slice(0, 500)} WHERE id = ${id}`;
