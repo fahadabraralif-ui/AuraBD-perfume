@@ -202,13 +202,16 @@ export default function OrdersTable({ orders, statuses, initialFilter, couriers 
   const [q, setQ] = useState("");
   const [pending, startTransition] = useTransition();
 
-  const label = Object.fromEntries(statuses.map((s) => [s.id, s.label]));
+  const label = { ...Object.fromEntries(statuses.map((s) => [s.id, s.label])), partial: "আংশিক ডেলিভারি" };
+  // Courier (Steadfast) e partial delivered hoyeche emon order
+  const isPartial = (o) => /partial/i.test(o.courier_status || "");
+  const partialCount = orders.filter(isPartial).length;
 
   const list = useMemo(() => {
     const term = q.trim().toLowerCase();
     return orders.filter(
       (o) =>
-        (filter === "all" || o.status === filter) &&
+        (filter === "all" || (filter === "partial" ? isPartial(o) : o.status === filter)) &&
         (!term || `${o.code} ${o.name} ${o.phone} ${o.address}`.toLowerCase().includes(term))
     );
   }, [orders, filter, q]);
@@ -239,6 +242,10 @@ export default function OrdersTable({ orders, statuses, initialFilter, couriers 
         <div><small>পেন্ডিং</small><b className="wait">{pendingList.length}টি • {tk(sum(pendingList))}</b></div>
         <div><small>বাতিল</small><b className="bad">{cancelled.length}টি • {tk(sum(cancelled))}</b></div>
         <div><small>রিটার্ন</small><b className="bad">{returned.length}টি • {tk(sum(returned))}</b></div>
+        <div title="কুরিয়ারে আংশিক ডেলিভারড (partial delivered) অর্ডার">
+          <small>আংশিক ডেলিভারি</small>
+          <b className="wait">{list.filter(isPartial).length}টি • {tk(sum(list.filter(isPartial)))}</b>
+        </div>
       </div>
 
       <div className="toolbar">
@@ -251,6 +258,9 @@ export default function OrdersTable({ orders, statuses, initialFilter, couriers 
               {s.label} ({orders.filter((o) => o.status === s.id).length})
             </button>
           ))}
+          <button className={filter === "partial" ? "active" : ""} onClick={() => setFilter("partial")}>
+            আংশিক ডেলিভারি ({partialCount})
+          </button>
         </div>
         <div className="toolbar-right">
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="নাম / ফোন / আইডি দিয়ে খুঁজুন" />

@@ -54,7 +54,7 @@ export default async function OrdersPage({ searchParams }) {
         key={`${status || "all"}-${rangeId}-${sp.from || ""}-${sp.to || ""}`}
         rangeLabel={range.label}
         statuses={STATUSES}
-        initialFilter={STATUSES.some((s) => s.id === status) ? status : "all"}
+        initialFilter={status === "partial" || STATUSES.some((s) => s.id === status) ? status : "all"}
         couriers={readyCouriers(settings).map((id) => COURIERS[id])}
         orders={shown.map((o) => ({
           ...o,

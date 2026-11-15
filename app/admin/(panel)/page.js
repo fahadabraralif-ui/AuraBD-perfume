@@ -26,7 +26,7 @@ export default async function Dashboard({ searchParams }) {
   const show = LIMITS.includes(Number(sp.show)) ? Number(sp.show) : 20;
   await ensureTables();
   const [orders, products, settings, incomplete] = await Promise.all([
-    sql`SELECT id, created_at, name, phone, product, area, qty, total, status FROM orders ORDER BY created_at DESC`,
+    sql`SELECT id, created_at, name, phone, product, area, qty, total, status, courier_status FROM orders ORDER BY created_at DESC`,
     getProducts({ all: true }),
     getSettings(),
     sql`SELECT phone, name, product, updated_at FROM incomplete_orders ORDER BY updated_at DESC LIMIT 5`,
@@ -67,6 +67,9 @@ export default async function Dashboard({ searchParams }) {
     { icon: "cart", color: "sky", label: "পেন্ডিং (কলের অপেক্ষায়)", value: `${ofStatus(inR, "pending").length}টি • ${money(sum(ofStatus(inR, "pending")))}`, t: null },
     { icon: "box", color: "amber", label: "রিটার্ন", value: `${ofStatus(inR, "returned").length}টি • ${money(sum(ofStatus(inR, "returned")))}`, t: null },
   );
+  // Steadfast e partial delivered order (status ডেলিভারড hoy, tai alada gona)
+  const partial = inR.filter((o) => /partial/i.test(o.courier_status || ""));
+  cards.push({ icon: "box", color: "orange", label: "আংশিক ডেলিভারি (Steadfast)", value: `${partial.length}টি • ${money(sum(partial))}`, t: null });
 
   // Sales Overview: chhoto range e din-protidin, boro/সব সময় e mash-protimash
   let buckets;
