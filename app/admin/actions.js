@@ -172,6 +172,21 @@ export async function saveProduct(_prev, formData) {
   redirect("/admin/products");
 }
 
+// পণ্য list theke shoja dam / ager dam / stock bodlano
+export async function quickUpdateProduct(id, { price, oldPrice, stock }) {
+  await requireAdmin();
+  price = Math.round(Number(price));
+  if (!(price > 0)) return { error: "সঠিক দাম দিন" };
+  oldPrice = Math.max(0, Math.round(Number(oldPrice) || 0));
+  stock = Math.max(0, Math.round(Number(stock) || 0));
+  const [row] = await sql`
+    UPDATE products SET price = ${price}, old_price = ${oldPrice}, stock = ${stock}
+    WHERE id = ${Number(id)} RETURNING id`;
+  if (!row) return { error: "পণ্য পাওয়া যায়নি" };
+  refreshAll();
+  return { ok: true };
+}
+
 export async function deleteProduct(id) {
   await requireAdmin();
   const [old] = await sql`DELETE FROM products WHERE id = ${id} RETURNING image`;
