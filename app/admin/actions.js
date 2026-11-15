@@ -602,12 +602,13 @@ export async function saveComboAction(_prev, formData) {
   const images = (arr) => (Array.isArray(arr) ? arr.map((it) => it?.image).filter(Boolean) : []);
   const oldImages = [
     ...Object.keys(posted).flatMap((list) => images(lists[list])),
-    ...["poster", "gift_image"].filter((k) => oldText[k] && oldText[k] !== text[k]).map((k) => oldText[k]),
+    ...["poster", "gift_image", "voice"].filter((k) => oldText[k] && oldText[k] !== text[k]).map((k) => oldText[k]),
   ];
   for (const [list, items] of Object.entries(posted)) {
     lists[list] = items.filter((it) => it && Object.entries(it).some(([f, v]) => f !== "image" && v));
   }
-  const keep = new Set([...Object.values(lists).flatMap(images), text.poster, text.gift_image]);
+  // Main site er voice same file hole muchbo na
+  const keep = new Set([...Object.values(lists).flatMap(images), text.poster, text.gift_image, text.voice, s.voice]);
   await deleteImages(oldImages.filter((u) => !keep.has(u)));
   await saveSettings({ combo1490: JSON.stringify({ ...saved, text, lists }) });
   refreshAll();

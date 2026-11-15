@@ -4,6 +4,12 @@ import { getSettings, getProducts, deliveryOptions } from "@/lib/store";
 import { getCombo, comboFill, comboVars } from "@/lib/combo";
 import Tracking from "@/components/Tracking";
 import ComboOrderForm from "@/components/ComboOrderForm";
+import VoicePlayer from "@/components/VoicePlayer";
+import Countdown from "@/components/Countdown";
+import Gallery from "@/components/Gallery";
+import Reveal from "@/components/Reveal";
+import RevealInit from "@/components/RevealInit";
+import "../motion.css";
 import "./combo.css";
 
 // Admin > কম্বো ক্যাম্পেইন পেজ theke shob lekha, chobi ar pondo ashe
@@ -27,6 +33,22 @@ export async function generateMetadata() {
   };
 }
 
+// Scroll korle bam/dan theke slide kore ashe (main site er moto)
+const REVEAL = [
+  [".cb-hero-copy > *", "alt"],
+  [".c1490 .gallery", "r"],
+  [".cb-head > *", "alt"],
+  [".cb-product", "alt"],
+  [".cb-free-card > img, .cb-free-card > .cb-noimg", "l"],
+  [".cb-free-copy > *", "alt"],
+  [".cb-benefit", "alt"],
+  [".cb-offer-box > *", "up"],
+  [".cb-order-info", "l"],
+  [".cb-order .cb-form-card", "r"],
+  [".cb-faq details", "alt"],
+  [".cb-footer .cb-container", "up"],
+];
+
 export const viewport = { themeColor: "#080d20" };
 
 // [ ] er bhitorer lekha sonali
@@ -41,28 +63,39 @@ export default async function ComboPage() {
   const L = c.lists;
   const oldPrice = product?.old_price > price ? product.old_price : 0;
   const brand = String(s.brand || "AYAAT PERFUME").toUpperCase();
+  const voice = c.text.voice_show === "off" ? "" : c.text.voice || s.voice;
+  // Boro chobi: poster + kombor pondo + gift — thumbnail e click korle bodlay
+  const gallery = [...new Set([c.text.poster, ...L.products.map((p) => p.image), c.text.gift_show !== "off" && c.text.gift_image].filter(Boolean))];
 
   return (
     <div className="c1490">
+      <RevealInit />
       <Tracking pixel={s.fb_pixel} gtm={s.gtm_id} />
-      <div className="cb-topbar">{t("topbar")}</div>
+      <VoicePlayer src={voice} />
+      <Reveal groups={REVEAL} />
+      <div className="cb-topbar"><span>{t("topbar")}</span>{t("topbar_cod") && <span className="cb-topbar-cod">{t("topbar_cod")}</span>}</div>
       <header className="cb-header">
         <div className="cb-container cb-nav">
-          <a className="cb-brand" href="#">{brand}</a>
+          <a className="cb-brand" href="#">{s.logo ? <img src={s.logo} alt={s.brand} /> : brand}</a>
           <nav className="cb-navlinks">
             <a href="#collection">কালেকশন</a><a href="#benefits">কেন নেবেন</a><a href="#offer">অফার</a><a href="#faq">FAQ</a>
           </nav>
-          <a className="cb-btn cb-navbtn" href="#order">{t("nav_btn")}</a>
+          <div className="cb-nav-right">
+            {s.phone && <a href={`tel:${s.phone}`} className="cb-phone">📞 {s.phone}</a>}
+            <a className="cb-btn cb-navbtn" href="#order">{t("nav_btn")}</a>
+          </div>
         </div>
       </header>
 
       <main>
         <section className="cb-hero">
+          {c.text.countdown_show !== "off" && <div className="cb-container"><Countdown title={t("countdown_title")} /></div>}
           <div className="cb-container cb-hero-grid">
             <div className="cb-hero-copy">
               <span className="cb-eyebrow">{t("eyebrow")}</span>
               <h1><Gold text={t("hero_title")} /></h1>
               <p>{t("hero_text")}</p>
+              {t("rating") && <div className="cb-rating"><span className="cb-stars">★★★★★</span> <b>{t("rating")}</b> <small>{t("rating_note")}</small></div>}
               <div className="cb-price-line">
                 <span className="cb-price">৳{v.price}</span>
                 {oldPrice > 0 && <span className="cb-old">৳{bn(oldPrice)}</span>}
@@ -72,10 +105,11 @@ export default async function ComboPage() {
                 <a className="cb-btn" href="#order">{t("hero_btn")}</a>
                 <a className="cb-secondary" href="#collection">{t("hero_btn2")}</a>
               </div>
+              {t("wa_btn") && s.whatsapp && <a href={`https://wa.me/${s.whatsapp}`} target="_blank" rel="noreferrer" className="cb-wa">{t("wa_btn")}</a>}
               <div className="cb-trust">{lines(t("trust")).map((x) => <span key={x}>{x}</span>)}</div>
             </div>
-            {c.text.poster && (
-              <div className="cb-poster-wrap"><img className="cb-poster" src={c.text.poster} alt={t("meta_title")} /></div>
+            {gallery.length > 0 && (
+              <div className="cb-poster-wrap"><Gallery images={gallery} brand={s.brand} badge={t("gallery_badge")} /></div>
             )}
           </div>
         </section>
@@ -164,6 +198,7 @@ export default async function ComboPage() {
       </main>
 
       <footer className="cb-footer"><div className="cb-container"><strong>{brand}</strong><br />{t("footer")}<br />© {new Date().getFullYear()} {brand}. সর্বস্বত্ব সংরক্ষিত।</div></footer>
+      {s.whatsapp && <a href={`https://wa.me/${s.whatsapp}`} className="float-wa cb-float-wa" target="_blank" rel="noreferrer" aria-label="WhatsApp">💬</a>}
       <div className="cb-sticky"><div><small>{t("sticky_text")}</small><br /><b>৳{v.price}</b></div><a className="cb-btn" href="#order">{t("sticky_btn")}</a></div>
     </div>
   );

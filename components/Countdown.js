@@ -11,7 +11,7 @@ const UNITS = [["দিন", 86400], ["ঘণ্টা", 3600], ["মিনি�
 
 const pad = (n) => bn(n).padStart(2, "০");
 
-export default function Countdown() {
+export default function Countdown({ title = "🔥 অফার শেষ হতে বাকি" }) {
   const [left, setLeft] = useState(null);
 
   useEffect(() => {
@@ -23,7 +23,7 @@ export default function Countdown() {
 
   return (
     <div className="countdown">
-      <p className="countdown-title">🔥 অফার শেষ হতে বাকি</p>
+      <p className="countdown-title">{title}</p>
       <div className="countdown-boxes">
         {UNITS.map(([label, sec], i) => {
           const value = left == null ? 0 : i === 0 ? Math.floor(left / sec) : Math.floor((left % UNITS[i - 1][1]) / sec);

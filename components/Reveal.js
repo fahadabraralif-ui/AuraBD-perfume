@@ -28,7 +28,8 @@ const GROUPS = [
   [".footer > *", "alt"],
 ];
 
-export default function Reveal() {
+// groups: onno page (jemon /combo1490) nijer selector dite pare
+export default function Reveal({ groups = GROUPS }) {
   useEffect(() => {
     if (!("IntersectionObserver" in window)) return;
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
@@ -55,7 +56,7 @@ export default function Reveal() {
     );
 
     const done = new Set();
-    for (const [sel, mode] of GROUPS) {
+    for (const [sel, mode] of groups) {
       const counts = new Map();
       for (const el of document.querySelectorAll(sel)) {
         if (done.has(el)) continue;
@@ -71,7 +72,7 @@ export default function Reveal() {
     // Ekhon .rv class i lukiye rakhche — agam lukano (RevealInit) ar dorkar nei
     document.documentElement.classList.remove("rv-js");
     return () => io.disconnect();
-  }, []);
+  }, [groups]);
 
   return null;
 }

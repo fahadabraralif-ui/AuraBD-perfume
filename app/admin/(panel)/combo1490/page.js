@@ -5,6 +5,7 @@ import { COMBO_SECTIONS, getCombo } from "@/lib/combo";
 import { saveComboAction } from "../../actions";
 import SaveForm from "../SaveForm";
 import ImageInput from "../ImageInput";
+import AudioInput from "../AudioInput";
 import { ComboProduct, ResetCombo } from "./ComboProduct";
 
 // List (pondo, karon, FAQ) er item — sheshe ekta faka ghor notun item er jonno
@@ -76,7 +77,12 @@ export default async function ComboAdmin() {
           <summary><h3>{sec.title}</h3></summary>
           <SaveForm action={saveComboAction}>
             <div className="content-grid">
-              {sec.fields.map(([k, label, kind]) => kind === "image" ? (
+              {sec.fields.map(([k, label, kind]) => kind === "audio" ? (
+                <div key={k} className="content-img wide">
+                  {label}
+                  <AudioInput name={`t.${k}`} defaultValue={c.text[k] || ""} />
+                </div>
+              ) : kind === "image" ? (
                 <div key={k} className="content-img wide">
                   {label}
                   <ImageInput name={`t.${k}`} defaultValue={c.text[k] || ""} folder="banners" />

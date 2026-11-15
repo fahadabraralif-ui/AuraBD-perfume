@@ -127,3 +127,70 @@
   .c1490 .cb-sticky{display:flex}
   .c1490 .cb-footer{padding-bottom:95px}
 }
+
+/* ===== Main site er feature: timer, gallery, rating, WhatsApp, voice, animation ===== */
+.c1490 .cb-topbar{display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap}
+.c1490 .cb-topbar-cod{background:rgba(0,0,0,.25);padding:2px 10px;border-radius:999px;font-size:13px}
+.c1490 .cb-brand img{height:42px;width:auto;max-width:180px;object-fit:contain;display:block}
+.c1490 .cb-nav-right{display:flex;align-items:center;gap:14px}
+.c1490 .cb-phone{color:var(--muted);font-size:14px;font-weight:600}
+.c1490 .cb-phone:hover{color:var(--gold)}
+
+/* Timer — campaign er rong e */
+.c1490 .countdown{background:linear-gradient(90deg,#8f1425,#d72d39 45%,#ff7a45);margin:0 0 34px;position:relative;box-shadow:0 14px 40px rgba(215,45,57,.25)}
+.c1490 .countdown-title{color:#fff;font-weight:700;font-size:1.15rem;margin:0 0 12px}
+.c1490 .countdown-box{background:#070b19;border:1px solid rgba(255,209,102,.3)}
+.c1490 .countdown-box b{color:var(--gold);font-family:var(--num)}
+.c1490 .countdown-box b{animation:cb-tick 1s steps(1) infinite}
+@keyframes cb-tick{50%{opacity:.85}}
+
+/* Gallery (poster + thumbnail) */
+.c1490 .gallery{position:relative;top:auto}
+.c1490 .gallery-main{border-color:rgba(255,255,255,.18);box-shadow:0 24px 70px rgba(0,0,0,.55)}
+.c1490 .gallery-main img{animation:fadeIn .4s}
+.c1490 .gallery-badge{background:var(--gold);color:#171321}
+.c1490 .gallery-thumbs{grid-template-columns:repeat(auto-fill,minmax(52px,1fr))}
+.c1490 .gallery-thumbs button{border-color:var(--line);background:#0a1020;cursor:pointer}
+.c1490 .gallery-thumbs button.active,.c1490 .gallery-thumbs button:hover{border-color:var(--gold)}
+
+.c1490 .cb-rating{margin:-6px 0 18px;color:var(--muted);font-size:14px}
+.c1490 .cb-rating b{color:var(--text)}
+.c1490 .cb-stars{color:var(--gold);letter-spacing:2px;display:inline-block;animation:s-twinkle 1.8s ease-in-out infinite}
+.c1490 .cb-wa{display:inline-flex;margin-top:14px;padding:11px 20px;border-radius:999px;border:1px solid #25d366;color:#25d366;font-weight:700;transition:.2s}
+.c1490 .cb-wa:hover{background:rgba(37,211,102,.1)}
+
+/* Animation */
+.c1490 .cb-topbar,.c1490 .cb-header{animation:s-drop .5s ease backwards}
+.c1490 h1 em{background:linear-gradient(90deg,var(--gold),#fff3c4,var(--gold2),var(--gold));background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:s-shimmer 4s linear infinite}
+.c1490 .cb-btn{position:relative;overflow:hidden}
+.c1490 .cb-btn:not(:disabled)::after{content:"";position:absolute;top:0;bottom:0;width:45%;left:-60%;pointer-events:none;background:linear-gradient(100deg,transparent,rgba(255,255,255,.6),transparent);transform:skewX(-20deg);animation:s-shine 3s ease-in-out infinite}
+.c1490 .cb-hero-actions .cb-btn:not(:disabled),.c1490 .cb-offer-box .cb-btn:not(:disabled),.c1490 .cb-form-card .cb-btn:not(:disabled){animation:cb-pulse 2.4s infinite,s-wiggle 5s ease-in-out infinite}
+@keyframes cb-pulse{0%{box-shadow:0 0 0 0 rgba(255,209,102,.55)}70%{box-shadow:0 0 0 16px rgba(255,209,102,0)}100%{box-shadow:0 0 0 0 rgba(255,209,102,0)}}
+.c1490 .cb-btn:active{transform:scale(.96)}
+.c1490 .cb-price{display:inline-block;animation:s-text-glow 2.2s ease-in-out infinite}
+.c1490 .cb-save{display:inline-block;animation:s-pop .6s .5s cubic-bezier(.3,1.6,.5,1) backwards}
+.c1490 .cb-offer-box{animation:cb-glow 3s ease-in-out infinite}
+@keyframes cb-glow{0%,100%{box-shadow:0 0 0 1px rgba(255,209,102,.25),0 0 18px rgba(255,209,102,.1)}50%{box-shadow:0 0 0 1px rgba(255,209,102,.6),0 0 34px rgba(255,209,102,.3)}}
+.c1490 .cb-free-card > img{animation:s-float 5s ease-in-out infinite}
+.c1490 .cb-free-badge{animation:s-wiggle 4s ease-in-out infinite}
+.c1490 .cb-product img{transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+.c1490 .cb-product:hover img{transform:scale(1.08) rotate(-1.5deg)}
+.c1490 .cb-benefit{transition:transform .3s ease,box-shadow .3s ease}
+.c1490 .cb-benefit:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.3)}
+.c1490 .cb-ico{display:inline-block;transition:transform .4s cubic-bezier(.3,1.6,.5,1)}
+.c1490 .cb-benefit:hover .cb-ico{transform:scale(1.25) rotate(-10deg)}
+.c1490 .cb-done-ico{animation:s-pop .7s cubic-bezier(.3,1.6,.5,1) backwards}
+.c1490 .cb-float-wa{animation:s-ping 1.8s ease-out infinite}
+
+/* Reveal shuru howar age prothom screen er jinish lukano (RevealInit) */
+.rv-js .c1490 :is(.cb-hero-copy > *, .gallery, .cb-head > *, .cb-product, .cb-free-copy > *, .cb-benefit, .cb-offer-box > *, .cb-order-info, .cb-form-card, .cb-faq details){opacity:0}
+
+/* Mobile: niche order bar ache, tai voice ar WhatsApp button ektu upore */
+@media(max-width:560px){
+  .c1490 .cb-phone{display:none}
+  .c1490 .countdown{margin-bottom:24px}
+  .c1490 .cb-wa{display:flex;justify-content:center}
+  .voice-wrap{bottom:84px}
+  .c1490 .cb-float-wa{bottom:84px}
+}
+@media(max-width:850px){.c1490 .cb-phone{display:none}}
