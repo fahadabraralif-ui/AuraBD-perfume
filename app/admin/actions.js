@@ -671,7 +671,7 @@ export async function resetContentAction() {
 
 export async function sendTestPush() {
   await requireAdmin();
-  const sent = await pushAll({ title: "🔔 টেস্ট নোটিফিকেশন", body: "অ্যাপে নোটিফিকেশন ঠিকমতো আসছে ✓", url: "/admin/app", tag: "test" });
+  const sent = await pushAll({ title: "🔔 টেস্ট নোটিফিকেশন", body: "অ্যাপে নোটিফিকেশন ঠিকমতো আসছে ✓", url: "/admin/app", tag: "test", type: "order" });
   return { sent };
 }
 
