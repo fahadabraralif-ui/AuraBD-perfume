@@ -1,6 +1,7 @@
 import { after } from "next/server";
 import { sql, ensureTables } from "@/lib/db";
 import { notifyIncomplete } from "@/lib/telegram";
+import { pushIncomplete } from "@/lib/push";
 import { clientIp, isBlocked } from "@/lib/fraud";
 
 // Form e phone likhe chole gele ekhane save hoy — admin "অসম্পূর্ণ অর্ডার" e dekhay
@@ -25,7 +26,10 @@ export async function POST(req) {
         product = EXCLUDED.product, ip = EXCLUDED.ip, updated_at = now()
       RETURNING (xmax = 0) AS inserted`;
     // Shudhu prothom bar Telegram e janay, protibar type korle na
-    if (row?.inserted) after(() => notifyIncomplete({ phone: body.phone, name, address, product }));
+    if (row?.inserted) {
+      after(() => notifyIncomplete({ phone: body.phone, name, address, product }));
+      after(() => pushIncomplete({ phone: body.phone, name, product }));
+    }
     return Response.json({ ok: true });
   } catch (err) {
     console.error("Incomplete save failed", err);

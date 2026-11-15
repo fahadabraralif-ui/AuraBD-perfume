@@ -15,6 +15,7 @@ import { capiTokens } from "@/lib/fbcapi";
 import { checkPhone } from "@/lib/bdcourier";
 import { maybeAutoSync } from "@/lib/courierSync";
 import { afterStatusChange } from "@/lib/orderHooks";
+import { pushAll, removeDevice } from "@/lib/push";
 import { notifyNewOrder, syncOrder, statusChangeText, markDeleted, sendToAll, removeChat, tg } from "@/lib/telegram";
 
 const refreshAdmin = () => revalidatePath("/admin", "layout");
@@ -664,4 +665,18 @@ export async function resetContentAction() {
   await requireAdmin();
   await saveSettings({ content: "" });
   refreshAll();
+}
+
+/* ---------- Android admin app (Firebase push) ---------- */
+
+export async function sendTestPush() {
+  await requireAdmin();
+  const sent = await pushAll({ title: "🔔 টেস্ট নোটিফিকেশন", body: "অ্যাপে নোটিফিকেশন ঠিকমতো আসছে ✓", url: "/admin/app", tag: "test" });
+  return { sent };
+}
+
+export async function removePushDevice(token) {
+  await requireAdmin();
+  await removeDevice(token);
+  refreshAdmin();
 }

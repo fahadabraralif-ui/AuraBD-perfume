@@ -18,6 +18,7 @@ const MENU = [
   { href: "/admin/courier", icon: "truck", label: "কুরিয়ার" },
   { href: "/admin/fraud", icon: "shield", label: "ফেক অর্ডার প্রোটেকশন" },
   { href: "/admin/telegram", icon: "send", label: "Telegram" },
+  { href: "/admin/app", icon: "bell", label: "অ্যাপ নোটিফিকেশন" },
   { href: "/admin/whatsapp", icon: "phone", label: "WhatsApp মেসেজ" },
   { href: "/admin/tracking", icon: "chart", label: "Pixel / ট্র্যাকিং" },
   { href: "/admin/settings", icon: "sliders", label: "সাইট সেটিংস" },

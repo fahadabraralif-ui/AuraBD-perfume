@@ -4,6 +4,7 @@ import { sql, ensureTables } from "@/lib/db";
 import { getSettings, getProducts, deliveryOptions, deliveryCharge } from "@/lib/store";
 import { checkOrder, clientIp } from "@/lib/fraud";
 import { notifyNewOrder } from "@/lib/telegram";
+import { pushNewOrder } from "@/lib/push";
 import { sendPurchase } from "@/lib/fbcapi";
 import { getCombo } from "@/lib/combo";
 
@@ -54,6 +55,8 @@ export async function POST(req) {
     revalidatePath("/admin", "layout");
     // Customer ke wait na koriye Telegram e pathay
     after(() => notifyNewOrder(row.id));
+    // Android admin app e notification
+    after(() => pushNewOrder(row.id));
     // Order ashar sathe sathe Purchase (Conversions API) — browser er Purchase er sathe ek event_id, tai ekbar-i gona hoy
     after(() => sendPurchase(row.id));
 
