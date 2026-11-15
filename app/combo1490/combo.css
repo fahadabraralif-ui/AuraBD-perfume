@@ -137,9 +137,9 @@
 .c1490 .cb-phone:hover{color:var(--gold)}
 
 /* Timer — campaign er rong e */
-.c1490 .countdown{background:linear-gradient(90deg,#8f1425,#d72d39 45%,#ff7a45);margin:0 0 34px;position:relative;box-shadow:0 14px 40px rgba(215,45,57,.25)}
-.c1490 .countdown-title{color:#fff;font-weight:700;font-size:1.15rem;margin:0 0 12px}
-.c1490 .countdown-box{background:#070b19;border:1px solid rgba(255,209,102,.3)}
+.c1490 .countdown{background:linear-gradient(90deg,#c98a12,#ffd166 30%,#fff1c2 50%,#ffd166 70%,#c98a12);background-size:200% auto;animation:s-shimmer 6s linear infinite;margin:0 0 34px;position:relative;box-shadow:0 14px 40px rgba(255,183,3,.22),inset 0 0 0 1px rgba(255,255,255,.35)}
+.c1490 .cb-hero .countdown-title{color:#2a1a02;font-weight:800;font-size:1.2rem;margin:0 0 12px;max-width:none;text-align:center}
+.c1490 .countdown-box{background:#070b19;border:1px solid rgba(255,209,102,.45)}
 .c1490 .countdown-box b{color:var(--gold);font-family:var(--num)}
 .c1490 .countdown-box b{animation:cb-tick 1s steps(1) infinite}
 @keyframes cb-tick{50%{opacity:.85}}
