@@ -3,7 +3,8 @@ import { bn } from "@/data/site";
 import { getSettings, getProducts, deliveryOptions } from "@/lib/store";
 import { getCombo, comboFill, comboVars } from "@/lib/combo";
 import Tracking from "@/components/Tracking";
-import ComboOrderForm from "@/components/ComboOrderForm";
+import OrderForm from "@/components/OrderForm";
+import { getContent, fillTokens, tokenVars } from "@/lib/content";
 import VoicePlayer from "@/components/VoicePlayer";
 import Countdown from "@/components/Countdown";
 import Gallery from "@/components/Gallery";
@@ -43,8 +44,7 @@ const REVEAL = [
   [".cb-free-copy > *", "alt"],
   [".cb-benefit", "alt"],
   [".cb-offer-box > *", "up"],
-  [".cb-order-info", "l"],
-  [".cb-order .cb-form-card", "r"],
+  [".c1490 .checkout", "up"],
   [".cb-faq details", "alt"],
   [".cb-footer .cb-container", "up"],
 ];
@@ -63,6 +63,13 @@ export default async function ComboPage() {
   const L = c.lists;
   const oldPrice = product?.old_price > price ? product.old_price : 0;
   const brand = String(s.brand || "AYAAT PERFUME").toUpperCase();
+  // Order form: main site er lekha (hubohu ek), shudhu heading/button/dhonnobad ei page er
+  const mainText = getContent(s).text;
+  const mv = tokenVars({ price, oldPrice: product?.old_price || price, brand: s.brand, delivery, freeBoxes: Number(s.free_delivery_boxes) || 0 });
+  const formText = {
+    ...Object.fromEntries(Object.entries(mainText).map(([k, val]) => [k, fillTokens(val, mv)])),
+    form_head: t("form_title"), submit_btn: t("submit_btn"), success_title: t("success_title"), success_text: t("success_text"),
+  };
   const voice = c.text.voice_show === "off" ? "" : c.text.voice || s.voice;
   // Boro chobi: poster + kombor pondo + gift — thumbnail e click korle bodlay
   const gallery = [...new Set([c.text.poster, ...L.products.map((p) => p.image), c.text.gift_show !== "off" && c.text.gift_image].filter(Boolean))];
@@ -166,24 +173,17 @@ export default async function ComboPage() {
 
         <section className="cb-order" id="order">
           <div className="cb-container">
-            <div className="cb-head"><div className="cb-kicker">{t("order_kicker")}</div><h2>{t("order_title")}</h2><p>{t("order_text")}</p></div>
-            <div className="cb-order-wrap">
-              <aside className="cb-order-info">
-                <h3>{t("info_title")}</h3><p>{t("info_text")}</p>
-                <div className="cb-summary"><span>কম্বো মূল্য</span><strong>৳{v.price}</strong></div>
-                <p className="cb-small">ঢাকার ভেতরে ডেলিভারি ৳{v.inside} • বাইরে ৳{v.outside}</p>
-              </aside>
-              {product ? (
-                <ComboOrderForm
-                  product={{ id: product.id, name: product.name, price: product.price, boxes: product.boxes || 1 }}
-                  delivery={delivery}
-                  freeBoxes={Number(s.free_delivery_boxes) || 0}
-                  text={{ form_title: t("form_title"), form_text: t("form_text"), submit_btn: t("submit_btn"), success_title: t("success_title"), success_text: t("success_text") }}
-                />
-              ) : (
-                <div className="cb-form-card"><p>এই মুহূর্তে অর্ডার নেওয়া বন্ধ আছে। কল করুন: {s.phone}</p></div>
-              )}
-            </div>
+            <div className="cb-head"><div className="cb-kicker">{t("order_kicker")}</div><h2><Gold text={t("order_title")} /></h2><p>{t("order_text")}</p></div>
+            {product ? (
+              <OrderForm
+                products={[{ id: product.id, name: product.name, price: product.price, boxes: product.boxes || 1, image: c.text.poster || product.image }]}
+                delivery={delivery}
+                freeBoxes={Number(s.free_delivery_boxes) || 0}
+                text={formText}
+              />
+            ) : (
+              <p className="checkout">এই মুহূর্তে অর্ডার নেওয়া বন্ধ আছে। কল করুন: {s.phone}</p>
+            )}
           </div>
         </section>
 

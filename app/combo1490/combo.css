@@ -183,7 +183,7 @@
 .c1490 .cb-float-wa{animation:s-ping 1.8s ease-out infinite}
 
 /* Reveal shuru howar age prothom screen er jinish lukano (RevealInit) */
-.rv-js .c1490 :is(.cb-hero-copy > *, .gallery, .cb-head > *, .cb-product, .cb-free-copy > *, .cb-benefit, .cb-offer-box > *, .cb-order-info, .cb-form-card, .cb-faq details){opacity:0}
+.rv-js .c1490 :is(.cb-hero-copy > *, .gallery, .cb-head > *, .cb-product, .cb-free-copy > *, .cb-benefit, .cb-offer-box > *, .checkout, .cb-faq details){opacity:0}
 
 /* Mobile: niche order bar ache, tai voice ar WhatsApp button ektu upore */
 @media(max-width:560px){
@@ -194,3 +194,7 @@
   .c1490 .cb-float-wa{bottom:84px}
 }
 @media(max-width:850px){.c1490 .cb-phone{display:none}}
+
+/* Order form: main site er form hubohu — tar nijer rong ferot (.c1490 er rong er bodole) */
+.c1490 .checkout{--line:#2f2450;--muted:#b8b0d4;--text:#f5f3ff;--gold:#f5c451;color:var(--text);max-width:1060px;margin:0 auto;text-align:left}
+.c1490 .cb-order .cb-head h2 em{font-style:normal;color:var(--gold)}
