@@ -5,6 +5,7 @@ import { getSettings, getProducts, deliveryOptions, deliveryCharge } from "@/lib
 import { checkOrder, clientIp } from "@/lib/fraud";
 import { notifyNewOrder } from "@/lib/telegram";
 import { sendPurchase } from "@/lib/fbcapi";
+import { getCombo } from "@/lib/combo";
 
 export async function POST(req) {
   const body = await req.json().catch(() => null);
@@ -14,7 +15,10 @@ export async function POST(req) {
 
   try {
     await ensureTables();
-    const [settings, products] = await Promise.all([getSettings(), getProducts()]);
+    const [settings, allProducts] = await Promise.all([getSettings(), getProducts({ all: true })]);
+    // Main site e shudhu সক্রিয় pondo; /combo1490 page er pondo (main site e lukano thakleo) order neya jay
+    const comboId = getCombo(settings).productId;
+    const products = allProducts.filter((p) => p.active || p.id === comboId);
     const ip = clientIp(req);
 
     const problem = await checkOrder({

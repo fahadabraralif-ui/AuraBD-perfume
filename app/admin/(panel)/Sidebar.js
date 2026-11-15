@@ -13,6 +13,7 @@ const MENU = [
   { href: "/admin/products", icon: "box", label: "পণ্য" },
   { href: "/admin/products/new", icon: "plus", label: "নতুন পণ্য" },
   { href: "/admin/content", icon: "orders", label: "ল্যান্ডিং পেজ টেক্সট" },
+  { href: "/admin/combo1490", icon: "box", label: "কম্বো ক্যাম্পেইন পেজ" },
   { href: "/admin/banners", icon: "image", label: "ব্যানার" },
   { href: "/admin/courier", icon: "truck", label: "কুরিয়ার" },
   { href: "/admin/fraud", icon: "shield", label: "ফেক অর্ডার প্রোটেকশন" },

@@ -549,6 +549,82 @@ export async function saveContentAction(_prev, formData) {
   return { ok: true, at: Date.now() };
 }
 
+/* ---------- /combo1490 campaign page ---------- */
+
+// "t.<key>" = lekha, "l.<list>.<i>.<field>" = list item, "p.*" = pondo/dam/chalu (shudhu oi box theke ashe)
+export async function saveComboAction(_prev, formData) {
+  await requireAdmin();
+  const s = await getSettings();
+  let saved = {};
+  try { saved = JSON.parse(s.combo1490 || "{}") || {}; } catch {}
+  const text = { ...(saved.text || {}) };
+  const lists = { ...(saved.lists || {}) };
+  const posted = {};
+  const oldText = { ...text };
+
+  for (const [k, v] of formData.entries()) {
+    const val = String(v).slice(0, 3000);
+    if (k.startsWith("t.")) text[k.slice(2)] = val;
+    else if (k.startsWith("l.")) {
+      const [, list, i, field] = k.split(".");
+      ((posted[list] ??= [])[Number(i)] ??= {})[field] = val.trim();
+    }
+  }
+
+  // Pondo + dam + page chalu/bondho
+  if (formData.has("p._")) {
+    saved.enabled = formData.get("p.enabled") === "on";
+    const price = Math.round(Number(formData.get("p.price")));
+    const oldPrice = Math.max(0, Math.round(Number(formData.get("p.old_price")) || 0));
+    const stock = Math.max(0, Math.round(Number(formData.get("p.stock")) || 0));
+    let id = formData.get("p.product");
+    if (!(price > 0)) return { error: "সঠিক দাম দিন" };
+    if (id === "new") {
+      const name = String(formData.get("p.name") || "").trim().slice(0, 150) || "১১:১১ কম্বো অফার";
+      // Main site e na dekhay (active = false), shudhu ei page theke order hoy
+      const [row] = await sql`
+        INSERT INTO products (name, price, old_price, stock, image, sort, active, boxes)
+        VALUES (${name}, ${price}, ${oldPrice}, ${stock || 100}, '/images/combo.png', 99, false, 1)
+        RETURNING id`;
+      id = Number(row.id);
+    } else {
+      id = Number(id);
+      const name = String(formData.get("p.name") || "").trim().slice(0, 150);
+      const [row] = await sql`
+        UPDATE products SET price = ${price}, old_price = ${oldPrice}, stock = ${stock},
+          name = CASE WHEN ${name} = '' THEN name ELSE ${name} END
+        WHERE id = ${id} RETURNING id`;
+      if (!row) return { error: "পণ্য পাওয়া যায়নি" };
+    }
+    saved.product_id = id;
+  }
+
+  const images = (arr) => (Array.isArray(arr) ? arr.map((it) => it?.image).filter(Boolean) : []);
+  const oldImages = [
+    ...Object.keys(posted).flatMap((list) => images(lists[list])),
+    ...["poster", "gift_image"].filter((k) => oldText[k] && oldText[k] !== text[k]).map((k) => oldText[k]),
+  ];
+  for (const [list, items] of Object.entries(posted)) {
+    lists[list] = items.filter((it) => it && Object.entries(it).some(([f, v]) => f !== "image" && v));
+  }
+  const keep = new Set([...Object.values(lists).flatMap(images), text.poster, text.gift_image]);
+  await deleteImages(oldImages.filter((u) => !keep.has(u)));
+  await saveSettings({ combo1490: JSON.stringify({ ...saved, text, lists }) });
+  refreshAll();
+  refreshAdmin();
+  return { ok: true, at: Date.now() };
+}
+
+export async function resetComboAction() {
+  await requireAdmin();
+  const s = await getSettings();
+  let saved = {};
+  try { saved = JSON.parse(s.combo1490 || "{}") || {}; } catch {}
+  // Lekha default e ferot, kintu pondo ar chalu/bondho thake
+  await saveSettings({ combo1490: JSON.stringify({ product_id: saved.product_id, enabled: saved.enabled }) });
+  refreshAll();
+}
+
 export async function resetContentAction() {
   await requireAdmin();
   await saveSettings({ content: "" });
