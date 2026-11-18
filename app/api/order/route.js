@@ -7,6 +7,7 @@ import { notifyNewOrder } from "@/lib/telegram";
 import { pushNewOrder } from "@/lib/push";
 import { sendPurchase } from "@/lib/fbcapi";
 import { getCombo } from "@/lib/combo";
+import { isAdmin } from "@/lib/auth";
 
 export async function POST(req) {
   const body = await req.json().catch(() => null);
@@ -38,17 +39,19 @@ export async function POST(req) {
     const qty = Math.min(10, Math.max(1, Number(body.qty) || 1));
     const total = product.price * qty + deliveryCharge(settings, area, product, qty);
     const name = String(body.name).trim().slice(0, 100);
+    // Admin login kora browser theke order (test) — Facebook e Purchase jabe na, pore status bodlaleo na
+    const admin = await isAdmin();
     // Facebook Conversions API er jonno (order ashar sathe Purchase e lage)
-    const fbp = String(body.fbp || "").slice(0, 200);
-    const fbc = String(body.fbc || "").slice(0, 300);
-    const userAgent = String(req.headers.get("user-agent") || "").slice(0, 400);
+    const fbp = admin ? "" : String(body.fbp || "").slice(0, 200);
+    const fbc = admin ? "" : String(body.fbc || "").slice(0, 300);
+    const userAgent = admin ? "" : String(req.headers.get("user-agent") || "").slice(0, 400);
     const pageUrl = String(body.pageUrl || "").slice(0, 400);
     const address = String(body.address).trim().slice(0, 500);
 
     const [row] = await sql`
-      INSERT INTO orders (name, phone, address, product, area, qty, total, ip, fbp, fbc, user_agent, page_url)
+      INSERT INTO orders (name, phone, address, product, area, qty, total, ip, fbp, fbc, user_agent, page_url, note)
       VALUES (${name}, ${body.phone}, ${address}, ${product.name}, ${area.id}, ${qty}, ${total}, ${ip},
-              ${fbp}, ${fbc}, ${userAgent}, ${pageUrl})
+              ${fbp}, ${fbc}, ${userAgent}, ${pageUrl}, ${admin ? "🧪 অ্যাডমিন ব্রাউজার থেকে — Pixel এ যায়নি" : ""})
       RETURNING id`;
     await sql`UPDATE products SET stock = GREATEST(stock - ${qty}, 0) WHERE id = ${product.id}`;
     await sql`DELETE FROM incomplete_orders WHERE phone = ${body.phone}`;
@@ -58,9 +61,9 @@ export async function POST(req) {
     // Android admin app e notification
     after(() => pushNewOrder(row.id));
     // Order ashar sathe sathe Purchase (Conversions API) — browser er Purchase er sathe ek event_id, tai ekbar-i gona hoy
-    after(() => sendPurchase(row.id));
+    if (!admin) after(() => sendPurchase(row.id));
 
-    return Response.json({ ok: true, id: Number(row.id) });
+    return Response.json({ ok: true, id: Number(row.id), track: !admin });
   } catch (err) {
     console.error("Order save failed", err);
     return Response.json({ ok: false, error: "সার্ভারে সমস্যা, একটু পরে আবার চেষ্টা করুন" }, { status: 500 });

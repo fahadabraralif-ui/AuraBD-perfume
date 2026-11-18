@@ -87,7 +87,8 @@ export default function OrderForm({ products, delivery, freeBoxes = 0, text = {}
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error);
       // Purchase: browser theke + server theke (Conversions API) — ek eventID, Facebook ekbar-i gone
-      if (data.id) {
+      // Admin er test order (track: false) e Purchase jay na
+      if (data.id && data.track !== false) {
         window.fbq?.(
           "track",
           "Purchase",
@@ -101,7 +102,7 @@ export default function OrderForm({ products, delivery, freeBoxes = 0, text = {}
           { eventID: `purchase-${data.id}` }
         );
       }
-      window.dataLayer?.push({ event: "order_placed", value: total, currency: "BDT" });
+      if (data.track !== false) window.dataLayer?.push({ event: "order_placed", value: total, currency: "BDT" });
       setStatus("done");
     } catch (err) {
       setStatus("idle");
