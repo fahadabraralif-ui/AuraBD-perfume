@@ -208,6 +208,23 @@ export function CourierHistory({ o, run }) {
 
 const AREA = { inside:"ঢাকার ভেতরে", outside: "ঢাকার বাইরে" };
 
+// Order kothay theke esheche — page_url / ip / note dekhe bujhi
+const SOURCES = {
+  combo: { icon: "🎯", label: "কম্বো পেজ" },
+  site: { icon: "🌐", label: "ওয়েবসাইট" },
+  bot: { icon: "🤖", label: "চ্যাট বট" },
+  inbox: { icon: "💬", label: "FB ইনবক্স" },
+  manual: { icon: "📞", label: "কল/ম্যানুয়াল" },
+};
+function orderSource(o) {
+  const url = o.page_url || "";
+  if (/\[(Facebook|WhatsApp) bot\]/.test(o.note || "")) return "bot";
+  if (url === "fb-inbox" || o.ip === "fb-inbox") return "inbox";
+  if (/\/combo1490/i.test(url)) return "combo";
+  if (url || o.ip) return "site";
+  return "manual";
+}
+
 const fmtDate = (iso) =>
   new Date(iso).toLocaleString("en-GB", {
     timeZone: "Asia/Dhaka",
@@ -219,10 +236,10 @@ const fmtDate = (iso) =>
   });
 
 function downloadCsv(rows) {
-  const head = ["Order", "Date", "Name", "Phone", "Address", "Product", "Area", "Qty", "Total", "Status", "Note"];
+  const head = ["Order", "Date", "Name", "Phone", "Address", "Product", "Area", "Qty", "Total", "Status", "Source", "Note"];
   const esc = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
   const lines = rows.map((o) =>
-    [o.code, fmtDate(o.created_at), o.name, o.phone, o.address, o.product, AREA[o.area] || o.area, o.qty, o.total, o.status, o.note]
+    [o.code, fmtDate(o.created_at), o.name, o.phone, o.address, o.product, AREA[o.area] || o.area, o.qty, o.total, o.status, SOURCES[orderSource(o)].label, o.note]
       .map(esc)
       .join(",")
   );
@@ -237,7 +254,9 @@ export default function OrdersTable({ orders, statuses, initialFilter, couriers 
   const router = useRouter();
   const [filter, setFilter] = useState(initialFilter);
   const [q, setQ] = useState("");
+  const [src, setSrc] = useState("all");
   const [pending, startTransition] = useTransition();
+  const srcCount = (id) => orders.filter((o) => orderSource(o) === id).length;
 
   const label = { ...Object.fromEntries(statuses.map((s) => [s.id, s.label])), partial: "আংশিক ডেলিভারি" };
   // Courier (Steadfast) e partial delivered hoyeche emon order
@@ -249,9 +268,10 @@ export default function OrdersTable({ orders, statuses, initialFilter, couriers 
     return orders.filter(
       (o) =>
         (filter === "all" || (filter === "partial" ? isPartial(o) : o.status === filter)) &&
+        (src === "all" || orderSource(o) === src) &&
         (!term || `${o.code} ${o.name} ${o.phone} ${o.address}`.toLowerCase().includes(term))
     );
-  }, [orders, filter, q]);
+  }, [orders, filter, q, src]);
 
   const run = (fn) => startTransition(async () => { await fn(); router.refresh(); });
 
@@ -269,7 +289,7 @@ export default function OrdersTable({ orders, statuses, initialFilter, couriers 
   return (
     <section className={`orders ${pending ? "busy" : ""}`}>
       <div className="order-summary">
-        <span>📅 {rangeLabel}{filter !== "all" ? ` • ${label[filter]}` : ""}{q.trim() ? ` • "${q.trim()}"` : ""}</span>
+        <span>📅 {rangeLabel}{filter !== "all" ? ` • ${label[filter]}` : ""}{src !== "all" ? ` • ${SOURCES[src].icon} ${SOURCES[src].label}` : ""}{q.trim() ? ` • "${q.trim()}"` : ""}</span>
         <div><small>মোট অর্ডার</small><b>{list.length}টি • {tk(sum(list))}</b></div>
         <div><small>কনফার্মড বিক্রি</small><b className="ok">{good.length}টি • {tk(sum(good))}</b></div>
         <div title="শুধু ডেলিভারড অর্ডার, ডেলিভারি চার্জ বাদে — শুধু পণ্যের দাম">
@@ -300,6 +320,12 @@ export default function OrdersTable({ orders, statuses, initialFilter, couriers 
           </button>
         </div>
         <div className="toolbar-right">
+          <select className="src-filter" value={src} onChange={(e) => setSrc(e.target.value)} aria-label="অর্ডার কোথা থেকে">
+            <option value="all">সব সোর্স ({orders.length})</option>
+            {Object.entries(SOURCES).map(([id, s]) => (
+              <option key={id} value={id}>{s.icon} {s.label} ({srcCount(id)})</option>
+            ))}
+          </select>
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="নাম / ফোন / আইডি দিয়ে খুঁজুন" />
           <button className="adm-btn ghost" onClick={() => downloadCsv(list)}>⬇ CSV</button>
           <button className="adm-btn ghost" onClick={() => router.refresh()}>⟳</button>
@@ -315,6 +341,10 @@ export default function OrdersTable({ orders, statuses, initialFilter, couriers 
               <div className="order-head">
                 <span className="order-id">{o.code}</span>
                 <span className="order-date">{fmtDate(o.created_at)}</span>
+                {(() => {
+                  const s = orderSource(o);
+                  return <span className={`badge src src-${s}`} title={o.page_url || ""}>{SOURCES[s].icon} {SOURCES[s].label}</span>;
+                })()}
                 {o.blocked && <span className="badge blocked">🚫 ব্লকড</span>}
                 <span className={`badge st-${o.status}`}>{label[o.status] || o.status}</span>
               </div>
