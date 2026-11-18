@@ -18,6 +18,10 @@ export async function POST(req) {
   try {
     await ensureTables();
     if (await isBlocked(body.phone, ip)) return Response.json({ ok: true });
+    // 24 ghontar moddhe ei number theke order hoye gele abar form e type korleo oshompurno dhori na
+    const [recent] = await sql`
+      SELECT 1 FROM orders WHERE phone = ${body.phone} AND created_at > now() - interval '24 hours' LIMIT 1`;
+    if (recent) return Response.json({ ok: true });
     const [row] = await sql`
       INSERT INTO incomplete_orders (phone, name, address, product, ip, updated_at)
       VALUES (${body.phone}, ${name}, ${address}, ${product}, ${ip}, now())
