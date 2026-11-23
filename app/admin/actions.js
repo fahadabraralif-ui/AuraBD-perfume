@@ -261,9 +261,6 @@ export async function saveSettingsAction(_prev, formData) {
     values.bdc_api_key = String(values.bdc_api_key).trim();
     if (!values.bdc_api_key) delete values.bdc_api_key;
   }
-  // Steadfast login: password khali rakhle purono ta thake
-  if ("sf_login_email" in values) values.sf_login_email = String(values.sf_login_email).trim();
-  if ("sf_login_password" in values && !String(values.sf_login_password)) delete values.sf_login_password;
   if ("fb_test_code" in values) values.fb_test_code = String(values.fb_test_code).trim().toUpperCase();
   await saveSettings(values);
   refreshAll();
@@ -327,7 +324,7 @@ export async function lookupPhoneAction(input, force = false) {
   let error = "";
   try {
     history = await checkPhone(phone, { force });
-    if (!history) error = "BD Courier API key বা Steadfast লগইন দেওয়া নেই — ফেক অর্ডার প্রোটেকশন পেজে দিন";
+    if (!history) error = "BD Courier API key বা Steadfast API Key দেওয়া নেই";
   } catch (err) {
     error = err.message;
   }

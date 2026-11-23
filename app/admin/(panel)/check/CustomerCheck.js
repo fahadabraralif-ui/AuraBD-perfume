@@ -94,7 +94,7 @@ export default function CustomerCheck({ labels, initial = "" }) {
                   <small className="adm-muted">✅ Steadfast এর হিসাব Steadfast থেকে সরাসরি (লাইভ)</small>
                 ) : (
                   <small className="adm-muted">
-                    ⚠️ Steadfast এর লাইভ হিসাব নেই — <a href="/admin/fraud">ফেক অর্ডার প্রোটেকশন</a> পেজে Steadfast লগইন দিন
+                    ⚠️ Steadfast এর লাইভ হিসাব নেই — <a href="/admin/courier">কুরিয়ার</a> পেজে Steadfast API Key দিন
                   </small>
                 )}
                 <div className="adm-cards chk-cards">

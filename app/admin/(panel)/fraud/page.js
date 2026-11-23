@@ -1,7 +1,7 @@
 import { sql, ensureTables } from "@/lib/db";
 import { getSettings } from "@/lib/store";
 import { bdcKey } from "@/lib/bdcourier";
-import { sfLoginReady } from "@/lib/steadfastFraud";
+import { sfCheckReady } from "@/lib/steadfastFraud";
 import { saveSettingsAction, addBlockAction } from "../../actions";
 import SaveForm from "../SaveForm";
 import UnblockButton from "./UnblockButton";
@@ -55,22 +55,13 @@ export default async function FraudPage() {
               />
               <small className="adm-muted">প্রতিটি অর্ডারে কাস্টমারের নাম্বারের সব কুরিয়ারের রিসিভ/রিটার্ন % দেখাবে (অর্ডার পেজ ও Telegram এ)।</small>
             </label>
-            <label>
-              Steadfast মার্চেন্ট লগইন ইমেইল {sfLoginReady(s) ? <span className="pill st-delivered">✓ চালু</span> : <span className="pill st-pending">বন্ধ</span>}
-              <input name="sf_login_email" type="email" autoComplete="off" defaultValue={s.sf_login_email} placeholder="steadfast.com.bd তে লগইনের ইমেইল" />
-            </label>
-            <label>
-              Steadfast মার্চেন্ট লগইন পাসওয়ার্ড
-              <input
-                name="sf_login_password"
-                type="password"
-                autoComplete="new-password"
-                placeholder={s.sf_login_password ? "•••••••• (সেভ করা আছে)" : "steadfast.com.bd এর পাসওয়ার্ড"}
-              />
-              <small className="adm-muted">
-                BD Courier এখন Steadfast এর লাইভ হিসাব দেয় না — এটা দিলে Steadfast এর নিজের Fraud Check থেকে আসল হিসাব আসবে।
+            <p className="adm-muted">
+              Steadfast লাইভ হিসাব {sfCheckReady(s) ? <span className="pill st-delivered">✓ চালু</span> : <span className="pill st-pending">বন্ধ</span>}
+              <br />
+              <small>
+                Steadfast এর হিসাব Steadfast এর নিজের API থেকে আসে (কুরিয়ার পেজের Steadfast API Key দিয়ে) — আলাদা কিছু দিতে হবে না।
               </small>
-            </label>
+            </p>
             <label>
               কুরিয়ার রিসিভ % এর কম হলে অর্ডার নেবে না
               <input name="fraud_min_rate" type="number" min="0" max="100" defaultValue={s.fraud_min_rate} />

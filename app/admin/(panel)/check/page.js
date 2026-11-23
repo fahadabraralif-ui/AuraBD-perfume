@@ -1,7 +1,7 @@
 import { STATUSES } from "@/lib/db";
 import { getSettings } from "@/lib/store";
 import { bdcKey } from "@/lib/bdcourier";
-import { sfLoginReady } from "@/lib/steadfastFraud";
+import { sfCheckReady } from "@/lib/steadfastFraud";
 import CustomerCheck from "./CustomerCheck";
 
 // Call/message e asha customer er number diye BD Courier hishab + amader ager order dekha
@@ -18,9 +18,9 @@ export default async function CheckPage({ searchParams }) {
       {!bdcKey(s) && (
         <p className="adm-err">BD Courier API key দেওয়া নেই — <a href="/admin/fraud">ফেক অর্ডার প্রোটেকশন</a> পেজে key দিন।</p>
       )}
-      {!sfLoginReady(s) && (
+      {!sfCheckReady(s) && (
         <p className="adm-err">
-          Steadfast এর হিসাব দেখতে <a href="/admin/fraud">ফেক অর্ডার প্রোটেকশন</a> পেজে Steadfast মার্চেন্ট লগইন (ইমেইল/পাসওয়ার্ড) দিন।
+          Steadfast এর লাইভ হিসাব দেখতে <a href="/admin/courier">কুরিয়ার</a> পেজে Steadfast API Key আর Secret Key দিন।
         </p>
       )}
       <CustomerCheck labels={labels} initial={typeof sp?.phone === "string" ? sp.phone : ""} />
