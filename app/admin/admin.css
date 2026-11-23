@@ -366,3 +366,20 @@
 .adm .order-summary b.ok { color: var(--a-green); }
 .adm .order-summary b.bad { color: var(--a-red); }
 @media (max-width: 600px) { .range-custom { width: 100%; } .range-custom input { flex: 1; min-width: 0; } }
+
+/* Customer check (fraud checker) page */
+.chk-form { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 16px; }
+.chk-form label { flex: 1; min-width: 220px; }
+.chk-form input { font-size: 1.15rem; letter-spacing: .5px; }
+.chk-verdict { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 14px; color: #fff; margin: 8px 0 14px; }
+.chk-verdict > div { display: flex; flex-direction: column; gap: 3px; }
+.chk-verdict b { font-size: 1.05rem; }
+.chk-verdict span { font-size: .9rem; opacity: .95; }
+.chk-verdict.good { background: linear-gradient(135deg, #16a34a, #22c55e); }
+.chk-verdict.mid { background: linear-gradient(135deg, #d97706, #f59e0b); }
+.chk-verdict.bad { background: linear-gradient(135deg, #dc2626, #f43f5e); }
+.chk-verdict.new { background: linear-gradient(135deg, #2563eb, #7c3aed); flex-direction: column; align-items: flex-start; gap: 3px; }
+.chk-cards { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 12px; }
+.chk-g { color: var(--a-green); }
+.chk-r { color: var(--a-red); }
+@media (max-width: 600px) { .chk-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

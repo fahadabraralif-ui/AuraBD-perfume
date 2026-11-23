@@ -10,6 +10,7 @@ const MENU = [
   { href: "/admin/orders", icon: "orders", label: "অর্ডার", badge: "pending" },
   { href: "/admin/orders/new", icon: "phone", label: "নতুন অর্ডার (কল)" },
   { href: "/admin/incomplete", icon: "clock", label: "অসম্পূর্ণ অর্ডার", badge: "incomplete" },
+  { href: "/admin/check", icon: "search", label: "কাস্টমার চেক (ফ্রড)" },
   { href: "/admin/products", icon: "box", label: "পণ্য" },
   { href: "/admin/products/new", icon: "plus", label: "নতুন পণ্য" },
   { href: "/admin/content", icon: "orders", label: "ল্যান্ডিং পেজ টেক্সট" },

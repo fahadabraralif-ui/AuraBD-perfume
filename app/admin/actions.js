@@ -304,6 +304,49 @@ export async function checkPhoneAction(phone) {
   }
 }
 
+/* Customer check page: kono number (call/msg e asha) — BD Courier hishab + amader site e ager order */
+export async function lookupPhoneAction(input, force = false) {
+  await requireAdmin();
+  const phone = String(input || "").replace(/\D/g, "").replace(/^0?880/, "0").replace(/^(1[3-9])/, "0$1");
+  if (!/^01[3-9]\d{8}$/.test(phone)) return { error: "সঠিক ১১ ডিজিটের মোবাইল নাম্বার দিন (01XXXXXXXXX)" };
+  await ensureTables();
+  const [[own], recent, blocked] = await Promise.all([
+    sql`SELECT count(*)::int AS total,
+          count(*) FILTER (WHERE status = 'delivered')::int AS delivered,
+          count(*) FILTER (WHERE status IN ('returned', 'cancelled'))::int AS bad
+        FROM orders WHERE phone = ${phone}`,
+    sql`SELECT id, created_at, name, address, product, total, status FROM orders
+        WHERE phone = ${phone} ORDER BY id DESC LIMIT 5`,
+    sql`SELECT reason FROM blocked WHERE kind = 'phone' AND value = ${phone}`,
+  ]);
+  const settings = await getSettings();
+  let history = null;
+  let error = "";
+  try {
+    history = await checkPhone(phone, { force });
+    if (!history) error = "BD Courier API key দেওয়া নেই — ফেক অর্ডার প্রোটেকশন পেজে key দিন";
+  } catch (err) {
+    error = err.message;
+  }
+  return {
+    ok: true,
+    phone,
+    history,
+    error,
+    own,
+    blocked: blocked[0] ? { reason: blocked[0].reason } : null,
+    recent: recent.map((o) => ({
+      code: orderCode(o.id, settings.brand),
+      at: new Date(o.created_at).toISOString(),
+      name: o.name,
+      address: o.address,
+      product: o.product,
+      total: o.total,
+      status: o.status,
+    })),
+  };
+}
+
 export async function unblock(kind, value) {
   await requireAdmin();
   await sql`DELETE FROM blocked WHERE kind = ${kind} AND value = ${value}`;
