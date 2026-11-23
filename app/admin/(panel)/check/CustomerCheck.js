@@ -9,6 +9,15 @@ const fmtDate = (iso) =>
     timeZone: "Asia/Dhaka", day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit",
   });
 
+// Shob courier er row shobshomoy dekhai — parcel na thakle 0
+const COURIERS = ["Pathao", "SteadFast", "Redx", "CarryBee", "PaperFly", "ParcelDex"];
+function allCouriers(list) {
+  const found = new Map(list.map((c) => [c.name.toLowerCase(), c]));
+  const rows = COURIERS.map((name) => found.get(name.toLowerCase()) || { name, total: 0, delivered: 0, returned: 0 });
+  const extra = list.filter((c) => !COURIERS.some((n) => n.toLowerCase() === c.name.toLowerCase()));
+  return [...rows, ...extra].sort((a, b) => b.total - a.total);
+}
+
 function Verdict({ h }) {
   if (!h.total) {
     return (
@@ -103,15 +112,15 @@ export default function CustomerCheck({ labels, initial = "" }) {
                   <div className="adm-card"><small>রিটার্ন/বাতিল</small><b className="chk-r">{h.returned}</b></div>
                   <div className="adm-card"><small>ফ্রড রিপোর্ট</small><b className={h.reports ? "chk-r" : ""}>{h.reports}</b></div>
                 </div>
-                {h.couriers.length > 0 && (
+                {(
                   <div className="adm-table-wrap">
                     <table className="adm-table">
                       <thead><tr><th>কুরিয়ার</th><th>মোট</th><th>রিসিভ</th><th>রিটার্ন</th><th>রিসিভ %</th></tr></thead>
                       <tbody>
-                        {h.couriers.map((c) => {
+                        {allCouriers(h.couriers).map((c) => {
                           const done = c.delivered + c.returned;
                           return (
-                            <tr key={c.name}>
+                            <tr key={c.name} className={c.total ? "" : "chk-zero"}>
                               <td><b>{c.name}</b></td>
                               <td>{c.total}</td>
                               <td>{c.delivered}</td>

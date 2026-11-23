@@ -383,3 +383,4 @@
 .chk-g { color: var(--a-green); }
 .chk-r { color: var(--a-red); }
 @media (max-width: 600px) { .chk-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.chk-zero td { color: var(--a-muted); opacity: .7; }
