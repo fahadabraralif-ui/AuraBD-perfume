@@ -88,6 +88,15 @@ export default function CustomerCheck({ labels, initial = "" }) {
             {h && (
               <>
                 <Verdict h={h} />
+                {h.sf_error ? (
+                  <p className="adm-err">⚠️ Steadfast এর হিসাব আনা যায়নি: {h.sf_error}</p>
+                ) : h.sf_live ? (
+                  <small className="adm-muted">✅ Steadfast এর হিসাব Steadfast থেকে সরাসরি (লাইভ)</small>
+                ) : (
+                  <small className="adm-muted">
+                    ⚠️ Steadfast এর লাইভ হিসাব নেই — <a href="/admin/fraud">ফেক অর্ডার প্রোটেকশন</a> পেজে Steadfast লগইন দিন
+                  </small>
+                )}
                 <div className="adm-cards chk-cards">
                   <div className="adm-card"><small>মোট পার্সেল</small><b>{h.total}</b></div>
                   <div className="adm-card"><small>রিসিভ</small><b className="chk-g">{h.delivered}</b></div>
