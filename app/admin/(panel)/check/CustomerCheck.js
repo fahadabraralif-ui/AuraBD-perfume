@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import Link from "next/link";
-import { lookupPhoneAction } from "../../actions";
+import { lookupPhoneAction, reportPhoneAction, unblock } from "../../actions";
 
 const fmtDate = (iso) =>
   new Date(iso).toLocaleString("en-GB", {
@@ -41,6 +41,81 @@ function Verdict({ h }) {
         <span>{text[1]}</span>
         <span className="chist-nums">✅ রিসিভ <b>{h.rate}%</b> <i>|</i> ↩️ রিটার্ন <b>{100 - h.rate}%</b></span>
       </div>
+    </div>
+  );
+}
+
+// Courier merchant der report + amader nijer report (block), ar notun report deyar form
+function Reports({ res, onDone }) {
+  const [reason, setReason] = useState("");
+  const [msg, setMsg] = useState("");
+  const [busy, startBusy] = useTransition();
+  const list = res.history?.report_list || [];
+  const count = res.history?.reports || 0;
+
+  const submit = (e) => {
+    e.preventDefault();
+    startBusy(async () => {
+      const r = await reportPhoneAction(res.phone, reason);
+      if (r?.error) return setMsg(r.error);
+      setReason("");
+      setMsg("");
+      onDone();
+    });
+  };
+  const remove = () =>
+    startBusy(async () => {
+      await unblock("phone", res.phone);
+      onDone();
+    });
+
+  return (
+    <div className="adm-box chk-reports">
+      <h3>⚠️ ফ্রড রিপোর্ট ({count + (res.blocked ? 1 : 0)})</h3>
+
+      {res.blocked && (
+        <div className="chk-report own">
+          <b>🚫 আপনার রিপোর্ট — এই নাম্বার ব্লক করা (ওয়েবসাইটে অর্ডার করতে পারবে না)</b>
+          <span>{res.blocked.reason || "কারণ লেখা নেই"}</span>
+          <small>
+            {fmtDate(res.blocked.at)} •{" "}
+            <button type="button" className="adm-link" onClick={remove} disabled={busy}>রিপোর্ট তুলে নিন (আনব্লক)</button>
+          </small>
+        </div>
+      )}
+
+      {list.length > 0 ? (
+        list.map((r, i) => (
+          <div key={i} className="chk-report">
+            <b>{r.courier ? `${r.courier} মার্চেন্টের রিপোর্ট` : "মার্চেন্টের রিপোর্ট"}{r.name ? ` — ${r.name}` : ""}</b>
+            {r.details && <span>{r.details}</span>}
+            {r.at && <small>{fmtDate(r.at)}</small>}
+          </div>
+        ))
+      ) : count > 0 ? (
+        <p className="adm-muted">{count}টি রিপোর্ট আছে (বিস্তারিত পাওয়া যায়নি)</p>
+      ) : (
+        !res.blocked && <p className="adm-muted">✅ কোনো কুরিয়ারে এই নাম্বারের বিরুদ্ধে রিপোর্ট নেই</p>
+      )}
+
+      {!res.blocked && (
+        <form className="chk-report-form" onSubmit={submit}>
+          <label>
+            নিজে রিপোর্ট করুন
+            <input
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              placeholder="কী হয়েছে? যেমন: পার্সেল রিসিভ করেনি, ফেক অর্ডার, ফোন ধরে না"
+              maxLength={300}
+            />
+          </label>
+          <button className="adm-btn danger" disabled={busy}>{busy ? "…" : "🚫 রিপোর্ট / ব্লক করুন"}</button>
+          {msg && <small className="adm-err">{msg}</small>}
+          <small className="adm-muted">
+            রিপোর্ট করলে নাম্বারটা আপনার ব্লক লিস্টে যাবে — ওয়েবসাইট থেকে আর অর্ডার করতে পারবে না। পরে এখান থেকেই তুলে নিতে পারবেন।
+          </small>
+        </form>
+      )}
     </div>
   );
 }
@@ -87,11 +162,16 @@ export default function CustomerCheck({ labels, initial = "" }) {
       {res?.error && !res.ok && <p className="adm-err">{res.error}</p>}
 
       {res?.ok && (
+        <>
         <div className="adm-grid even">
           <div className="adm-box">
             <h3>📦 কুরিয়ার হিস্টরি — {res.phone}</h3>
-            {res.blocked && (
-              <p className="adm-err">🚫 এই নাম্বার ব্লক করা আছে{res.blocked.reason ? ` (${res.blocked.reason})` : ""}</p>
+            {(res.blocked || h?.reports > 0) && (
+              <p className="chk-alert">
+                🚨 সাবধান — এই নাম্বারের বিরুদ্ধে {res.blocked ? "আপনার রিপোর্ট" : ""}
+                {res.blocked && h?.reports > 0 ? " ও " : ""}
+                {h?.reports > 0 ? `${h.reports}টি মার্চেন্ট রিপোর্ট` : ""} আছে — নিচে দেখুন
+              </p>
             )}
             {res.error && <p className="adm-err">{res.error}</p>}
             {h && (
@@ -175,6 +255,8 @@ export default function CustomerCheck({ labels, initial = "" }) {
             </p>
           </div>
         </div>
+        <Reports res={res} onDone={() => check()} />
+        </>
       )}
     </div>
   );

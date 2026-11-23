@@ -384,3 +384,11 @@
 .chk-r { color: var(--a-red); }
 @media (max-width: 600px) { .chk-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .chk-zero td { color: var(--a-muted); opacity: .7; }
+.chk-alert { background: #fee2e2; color: #b91c1c; font-weight: 700; padding: 10px 14px; border-radius: 12px; margin: 6px 0 10px; }
+.chk-reports { margin-top: 16px; }
+.chk-report { display: flex; flex-direction: column; gap: 3px; padding: 10px 14px; border-left: 4px solid #f97316; background: #fff7ed; border-radius: 10px; margin-bottom: 8px; }
+.chk-report.own { border-left-color: #dc2626; background: #fef2f2; }
+.chk-report small { color: var(--a-muted); }
+.chk-report-form { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; margin-top: 12px; }
+.chk-report-form label { flex: 1; min-width: 240px; }
+.chk-report-form small { flex-basis: 100%; }

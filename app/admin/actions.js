@@ -317,7 +317,7 @@ export async function lookupPhoneAction(input, force = false) {
         FROM orders WHERE phone = ${phone}`,
     sql`SELECT id, created_at, name, address, product, total, status FROM orders
         WHERE phone = ${phone} ORDER BY id DESC LIMIT 5`,
-    sql`SELECT reason FROM blocked WHERE kind = 'phone' AND value = ${phone}`,
+    sql`SELECT reason, created_at FROM blocked WHERE kind = 'phone' AND value = ${phone}`,
   ]);
   const settings = await getSettings();
   let history = null;
@@ -334,7 +334,7 @@ export async function lookupPhoneAction(input, force = false) {
     history,
     error,
     own,
-    blocked: blocked[0] ? { reason: blocked[0].reason } : null,
+    blocked: blocked[0] ? { reason: blocked[0].reason, at: new Date(blocked[0].created_at).toISOString() } : null,
     recent: recent.map((o) => ({
       code: orderCode(o.id, settings.brand),
       at: new Date(o.created_at).toISOString(),
@@ -345,6 +345,19 @@ export async function lookupPhoneAction(input, force = false) {
       status: o.status,
     })),
   };
+}
+
+/** Customer check page theke nijer report: number block list e jay (ar website e order nite parbe na) */
+export async function reportPhoneAction(phone, reason) {
+  await requireAdmin();
+  if (!/^01[3-9]\d{8}$/.test(String(phone))) return { error: "সঠিক নাম্বার দিন" };
+  const why = String(reason || "").trim().slice(0, 300);
+  if (!why) return { error: "কী সমস্যা হয়েছে লিখুন (যেমন: পার্সেল রিসিভ করেনি)" };
+  await sql`
+    INSERT INTO blocked (kind, value, reason) VALUES ('phone', ${phone}, ${why})
+    ON CONFLICT (kind, value) DO UPDATE SET reason = EXCLUDED.reason, created_at = now()`;
+  refreshAdmin();
+  return { ok: true };
 }
 
 export async function unblock(kind, value) {
